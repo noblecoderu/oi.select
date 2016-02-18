@@ -371,9 +371,10 @@ angular.module('oi.select')
                 trackByName           = match[9] || displayName,              //item.id
                 valueMatches          = match[8].match(VALUES_REGEXP);        //collection
 
-            var valuesName            = valueMatches[1],                      //collection
-                filteredValuesName    = valuesName + (valueMatches[3] || ''), //collection | filter
-                valuesFnName          = valuesName + (valueMatches[2] || ''); //collection()
+            var valuesName            = valueMatches[1],                                    //collection()
+                resourceFnName        = valuesName[0] == '!' ? valuesName.slice(1) : '',   //collection
+                filteredValuesName    = valuesName + (valueMatches[3] || ''),               //collection | filter
+                valuesFnName          = valuesName + (valueMatches[2] || '');               //collection()
 
             var selectAsFn            = selectAsName && $parse(selectAsName),
                 displayFn             = $parse(displayName),
@@ -381,6 +382,7 @@ angular.module('oi.select')
                 disableWhenFn         = $parse(disableWhenName),
                 filteredValuesFn      = $parse(filteredValuesName),
                 valuesFn              = $parse(valuesFnName),
+                resourceFn            = $parse(resourceFnName),
                 trackByFn             = $parse(trackByName);
 
             var multiplePlaceholderFn = $interpolate(attrs.multiplePlaceholder || ''),
@@ -395,6 +397,7 @@ angular.module('oi.select')
                 removedItem,
                 multiple,
                 multipleLimit,
+                countOnPage,
                 newItemFn;
 
             return function(scope, element, attrs, ctrl) {
@@ -432,6 +435,20 @@ angular.module('oi.select')
                 match = options.groupFilter.split(':');
                 var groupFilter = $filter(match[0]),
                     groupFilterOptionsFn = $parse(match[1]);
+
+
+                //COUNT
+                scope.countLoadElements = 0;
+                scope.useResource  = resourceFnName != '';
+                scope.$parent.$watch(attrs.countOnPage, function(value) {
+                     countOnPage = Number(value) || 20;
+                });
+
+                if (angular.isDefined(attrs.tabindex)) {
+                    inputElement.attr('tabindex', attrs.tabindex);
+                    element[0].removeAttribute('tabindex');
+                }
+
 
                 if (options.newItemFn) {
                     newItemFn = $parse(options.newItemFn);
@@ -918,9 +935,10 @@ angular.module('oi.select')
                     if (timeoutPromise && waitTime) {
                         $timeout.cancel(timeoutPromise); //cancel previous timeout
                     }
+                    var fn = resourceFnName != '' ? resourceFn(scope.$parent).query : valuesFn;
 
                     timeoutPromise = $timeout(function() {
-                        var values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
+                        var values = fn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
 
                         scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
 
@@ -1126,4 +1144,4 @@ angular.module('oi.select')
         return input;
     };
 });
-angular.module("oi.select").run(["$templateCache", function($templateCache) {$templateCache.put("src/template.html","<div class=select-search><ul class=select-search-list><li class=\"btn btn-default btn-xs select-search-list-item select-search-list-item_selection\" ng-hide=listItemHide ng-repeat=\"item in output track by $index\" ng-class=\"{focused: backspaceFocus && $last}\" ng-click=removeItem($index) ng-bind-html=getSearchLabel(item)></li><li class=\"select-search-list-item select-search-list-item_input\" ng-class=\"{\'select-search-list-item_hide\': inputHide}\"><input autocomplete=off ng-model=query ng-keyup=keyUp($event) ng-keydown=keyDown($event)></li><li class=\"select-search-list-item select-search-list-item_loader\" ng-show=showLoader></li></ul></div><div class=select-dropdown ng-show=isOpen><ul ng-if=isOpen class=select-dropdown-optgroup ng-repeat=\"(group, options) in groups\"><div class=select-dropdown-optgroup-header ng-if=\"group && options.length\" ng-bind-html=\"getGroupLabel(group, options)\"></div><li class=select-dropdown-optgroup-option ng-init=\"isDisabled = getDisableWhen(option)\" ng-repeat=\"option in options\" ng-class=\"{\'active\': selectorPosition === groupPos[group] + $index, \'disabled\': isDisabled, \'ungroup\': !group}\" ng-click=\"isDisabled || addItem(option)\" ng-mouseenter=\"setSelection(groupPos[group] + $index)\" ng-bind-html=getDropdownLabel(option)></li></ul></div>");}]);
+angular.module("oi.select").run(["$templateCache", function($templateCache) {$templateCache.put("src/template.html","<div class=select-search><ul class=select-search-list><li class=\"btn btn-default btn-xs select-search-list-item select-search-list-item_selection\" ng-hide=listItemHide ng-repeat=\"item in output track by $index\" ng-class=\"{focused: backspaceFocus && $last}\" ng-click=removeItem($index) ng-bind-html=getSearchLabel(item)></li><li class=\"select-search-list-item select-search-list-item_input\" ng-class=\"{\'select-search-list-item_hide\': inputHide}\"><input autocomplete=off ng-model=query ng-keyup=keyUp($event) ng-keydown=keyDown($event)></li><li class=\"select-search-list-item select-search-list-item_loader\" ng-show=showLoader></li></ul></div><div class=select-dropdown ng-show=isOpen><ul ng-if=isOpen class=select-dropdown-optgroup ng-repeat=\"(group, options) in groups\"><div class=select-dropdown-optgroup-header ng-if=\"group && options.length\" ng-bind-html=\"getGroupLabel(group, options)\"></div><li class=select-dropdown-optgroup-option ng-init=\"isDisabled = getDisableWhen(option)\" ng-repeat=\"option in options\" ng-class=\"{\'active\': selectorPosition === groupPos[group] + $index, \'disabled\': isDisabled, \'ungroup\': !group}\" ng-click=\"isDisabled || addItem(option)\" ng-mouseenter=\"setSelection(groupPos[group] + $index)\" ng-bind-html=getDropdownLabel(option)></li></ul><button ng-if=useResource>Подгрузить ещё {{ countLoadElements }} элементов</button></div>");}]);

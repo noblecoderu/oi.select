@@ -67,5 +67,5 @@ angular.module('selectDemo')
             return deferred.promise;
         }
 
-        $scope.bundle = [4,2,3];
+        $scope.bundle = undefined;
     });

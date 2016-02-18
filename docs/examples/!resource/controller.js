@@ -1,7 +1,7 @@
 angular.module('selectDemo')
     .controller('selectResourceController', function ($scope, $q, $timeout, ShopArr) {
 
-        $scope.shopArr = ShopArr.query();
+        $scope.shopArr = ShopArr;
 
         $scope.shopArrFn = function(query, querySelectAs) {
             if (querySelectAs) {
