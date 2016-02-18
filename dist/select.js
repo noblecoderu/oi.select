@@ -398,6 +398,8 @@ angular.module('oi.select')
                 multiple,
                 multipleLimit,
                 countOnPage,
+                resFilter,
+                resSelectAsFilter,
                 newItemFn;
 
             return function(scope, element, attrs, ctrl) {
@@ -437,11 +439,17 @@ angular.module('oi.select')
                     groupFilterOptionsFn = $parse(match[1]);
 
 
-                //COUNT
-                scope.countLoadElements = 0;
+                //COUNT AND FILTERS
                 scope.useResource  = resourceFnName != '';
+                scope.countRemainElements = 0;
                 scope.$parent.$watch(attrs.countOnPage, function(value) {
                      countOnPage = Number(value) || 20;
+                });
+                scope.$parent.$watch(attrs.resFilter, function(value) {
+                     resFilter = Number(value) || 20;
+                });
+                scope.$parent.$watch(attrs.resSelectAsFilter, function(value) {
+                     resSelectAsFilter = Number(value) || 20;
                 });
 
                 if (angular.isDefined(attrs.tabindex)) {
@@ -935,10 +943,22 @@ angular.module('oi.select')
                     if (timeoutPromise && waitTime) {
                         $timeout.cancel(timeoutPromise); //cancel previous timeout
                     }
-                    var fn = resourceFnName != '' ? resourceFn(scope.$parent).query : valuesFn;
+
+                    scope.countRemainElements = 0;
+                    if (resourceFnName != '' && resFilter) {
+                        resourceFn(scope.$parent).option(resFilter, function(result){
+                            // TODO: подсчёт оставшихся для подгрузки элементов
+                            scope.countRemainElements = result.count;
+                        });
+                    }
 
                     timeoutPromise = $timeout(function() {
-                        var values = fn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
+                        var values;
+                        if (resourceFnName == ''){
+                            values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
+                        } else {
+                            values = resourceFn(scope.$parent).query(resSelectAsFilter ? resSelectAsFilter : resFilter)
+                        }
 
                         scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
 

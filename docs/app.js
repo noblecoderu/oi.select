@@ -4,7 +4,8 @@ angular.module('selectDemo', ['oi.select', 'ngResource', 'hljs', 'gettext' /*, '
 
     .factory('ShopArr', function ($resource) {
         return $resource(URL + 'data/shopArr.json', {}, {
-                query: {method: 'GET', cache: true, isArray: true}
+                query: {method: 'GET', cache: true, isArray: true},
+                option: {method: 'OPTION', cache: true}
             }
         );
     })
