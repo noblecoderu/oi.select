@@ -52,6 +52,8 @@ angular.module('oi.select')
                 multiple,
                 multipleLimit,
                 countOnPage,
+                resFilter,
+                resSelectAsFilter,
                 newItemFn;
 
             return function(scope, element, attrs, ctrl) {
@@ -97,11 +99,11 @@ angular.module('oi.select')
                 scope.$parent.$watch(attrs.countOnPage, function(value) {
                      countOnPage = Number(value) || 20;
                 });
-                scope.$parent.$watch(attrs.resourceFilter, function(value) {
-                     countOnPage = Number(value) || 20;
+                scope.$parent.$watch(attrs.resFilter, function(value) {
+                     resFilter = Number(value) || 20;
                 });
-                scope.$parent.$watch(attrs.resourceStartFilter, function(value) {
-                     countOnPage = Number(value) || 20;
+                scope.$parent.$watch(attrs.resSelectAsFilter, function(value) {
+                     resSelectAsFilter = Number(value) || 20;
                 });
 
                 if (angular.isDefined(attrs.tabindex)) {
