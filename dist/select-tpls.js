@@ -383,6 +383,7 @@ angular.module('oi.select')
                 filteredValuesFn      = $parse(filteredValuesName),
                 valuesFn              = $parse(valuesFnName),
                 resourceFn            = $parse(resourceFnName),
+                paramsFn              = $parse(valueMatches[2].slice(1, valueMatches[2].length - 1) || ''),
                 trackByFn             = $parse(trackByName);
 
             var multiplePlaceholderFn = $interpolate(attrs.multiplePlaceholder || ''),
@@ -398,8 +399,6 @@ angular.module('oi.select')
                 multiple,
                 multipleLimit,
                 countOnPage,
-                resFilter,
-                resSelectAsFilter,
                 newItemFn;
 
             return function(scope, element, attrs, ctrl) {
@@ -444,12 +443,6 @@ angular.module('oi.select')
                 scope.countRemainElements = 0;
                 scope.$parent.$watch(attrs.countOnPage, function(value) {
                      countOnPage = Number(value) || 20;
-                });
-                scope.$parent.$watch(attrs.resFilter, function(value) {
-                     resFilter = Number(value) || 20;
-                });
-                scope.$parent.$watch(attrs.resSelectAsFilter, function(value) {
-                     resSelectAsFilter = Number(value) || 20;
                 });
 
                 if (angular.isDefined(attrs.tabindex)) {
@@ -945,11 +938,11 @@ angular.module('oi.select')
                     }
 
                     scope.countRemainElements = 0;
-                    if (resourceFnName != '' && resFilter) {
-                        resourceFn(scope.$parent).option(resFilter, function(result){
+                    if (resourceFnName != '' && query && resourceFn(scope.$parent).option) {
+                        resourceFn(scope.$parent).option(query, function(result){
                             // TODO: подсчёт оставшихся для подгрузки элементов
                             scope.countRemainElements = result.count;
-                        });
+                        }, function(error){});
                     }
 
                     timeoutPromise = $timeout(function() {
@@ -957,7 +950,8 @@ angular.module('oi.select')
                         if (resourceFnName == ''){
                             values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
                         } else {
-                            values = resourceFn(scope.$parent).query(resSelectAsFilter ? resSelectAsFilter : resFilter)
+                            params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                            values = resourceFn(scope.$parent).query(selectedAs ? selectedAs : query) || '';
                         }
 
                         scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
@@ -980,7 +974,12 @@ angular.module('oi.select')
                                     var outputValues = multiple ? scope.output : [];
                                     var filteredList = listFilter(oiUtils.objToArr(values), query, getLabel, listFilterOptionsFn(scope.$parent), element);
                                     var withoutIntersection = oiUtils.intersection(filteredList, outputValues, trackBy, trackBy, true);
-                                    var filteredOutput = filter(withoutIntersection);
+                                    var filteredOutput;
+                                    if (resourceFnName == '') {
+                                        filteredOutput = filter(withoutIntersection);
+                                    } else {
+                                        filteredOutput = withoutIntersection;
+                                    }
 
                                     scope.groups = group(filteredOutput);
                                 }

@@ -3,13 +3,16 @@ angular.module('selectDemo')
 
         $scope.shopArr = ShopArr;
 
-        $scope.shopArrFn = function(query, querySelectAs) {
-            if (querySelectAs) {
-                return getOptionsById(querySelectAs);
+        $scope.getQuery = function(query){
+            return {
+                name: query
+            };
+        };
 
-            } else {
-                return findOptions(query);
-            }
+        $scope.getSelectedAs = function(selectedAs){
+            return {
+                id__in: selectedAs
+            };
         };
 
         var counter = 15;
