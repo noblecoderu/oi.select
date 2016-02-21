@@ -441,6 +441,7 @@ angular.module('oi.select')
                 //COUNT AND FILTERS
                 scope.useResource  = resourceFnName != '';
                 scope.countRemainElements = 0;
+                scope.page = 1;
                 scope.$parent.$watch(attrs.countOnPage, function(value) {
                      countOnPage = Number(value) || 20;
                 });
@@ -819,7 +820,9 @@ angular.module('oi.select')
                         scope.removeItem(0); //because click on border (not on chosen item) doesn't remove chosen element
                     }
 
-                    if (scope.isOpen && options.closeList && (event.target.nodeName !== 'INPUT' || !scope.query.length)) { //do not reset if you are editing the query
+                    if (scope.isOpen && event.target.nodeName === 'BUTTON'){
+                        loadElements();
+                    } else if (scope.isOpen && options.closeList && (event.target.nodeName !== 'INPUT' || !scope.query.length)) { //do not reset if you are editing the query
                         resetMatches({query: options.editItem && !editItemIsCorrected});
                         scope.$evalAsync();
                     } else {
@@ -938,9 +941,10 @@ angular.module('oi.select')
                     }
 
                     scope.countRemainElements = 0;
-                    if (resourceFnName != '' && query && resourceFn(scope.$parent).option) {
-                        resourceFn(scope.$parent).option(query, function(result){
-                            // TODO: подсчёт оставшихся для подгрузки элементов
+                    scope.page = 1
+                    if (resourceFnName != '' && query != undefined && query != null && resourceFn(scope.$parent).options) {
+                        params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                        resourceFn(scope.$parent).options(params.query, function(result){
                             scope.countRemainElements = result.count;
                         }, function(error){});
                     }
@@ -1000,6 +1004,10 @@ angular.module('oi.select')
 
                     return timeoutPromise;
                 }
+
+                function loadElements(){
+                    scope.page++;
+                };
 
                 function updateGroupPos() {
                     var i, key, value, collectionKeys = [], groupCount = 0;
