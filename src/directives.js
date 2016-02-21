@@ -592,9 +592,9 @@ angular.module('oi.select')
                     }
 
                     scope.countRemainElements = 0;
-                    if (resourceFnName != '' && query && resourceFn(scope.$parent).option) {
-                        resourceFn(scope.$parent).option(query, function(result){
-                            // TODO: подсчёт оставшихся для подгрузки элементов
+                    if (resourceFnName != '' && angular.isDefined(query) && resourceFn(scope.$parent).option) {
+                        params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                        resourceFn(scope.$parent).option(params.query, function(result){
                             scope.countRemainElements = result.count;
                         }, function(error){});
                     }
