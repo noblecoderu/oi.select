@@ -951,7 +951,7 @@ angular.module('oi.select')
                             values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
                         } else {
                             params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
-                            values = resourceFn(scope.$parent).query(selectedAs ? selectedAs : query) || '';
+                            values = resourceFn(scope.$parent).query(selectedAs ? params.selectedAs : params.query) || '';
                         }
 
                         scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
