@@ -37,7 +37,7 @@ angular.module('oi.select')
                 filteredValuesFn      = $parse(filteredValuesName),
                 valuesFn              = $parse(valuesFnName),
                 resourceFn            = $parse(resourceFnName),
-                paramsFn              = $parse(valueMatches[2].slice(1, valueMatches[2].length - 1) || ''),
+                paramsFn              = $parse(valueMatches[2] ? valueMatches[2].slice(1, valueMatches[2].length - 1) : ''),
                 trackByFn             = $parse(trackByName);
 
             var multiplePlaceholderFn = $interpolate(attrs.multiplePlaceholder || ''),
@@ -594,6 +594,7 @@ angular.module('oi.select')
 
                     timeoutPromise = $timeout(function() {
 
+                        //TODO: По пробовать сделать вызов гет запроса полсе options.
                         scope.page = 1
                         if (resourceFnName != '' && query != undefined && query != null && resourceFn(scope.$parent).options) {
                             var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});

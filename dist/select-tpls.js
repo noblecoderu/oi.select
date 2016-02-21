@@ -383,7 +383,7 @@ angular.module('oi.select')
                 filteredValuesFn      = $parse(filteredValuesName),
                 valuesFn              = $parse(valuesFnName),
                 resourceFn            = $parse(resourceFnName),
-                paramsFn              = $parse(valueMatches[2].slice(1, valueMatches[2].length - 1) || ''),
+                paramsFn              = $parse(valueMatches[2] ? valueMatches[2].slice(1, valueMatches[2].length - 1) : ''),
                 trackByFn             = $parse(trackByName);
 
             var multiplePlaceholderFn = $interpolate(attrs.multiplePlaceholder || ''),
@@ -398,7 +398,6 @@ angular.module('oi.select')
                 removedItem,
                 multiple,
                 multipleLimit,
-                countOnPage,
                 newItemFn;
 
             return function(scope, element, attrs, ctrl) {
@@ -440,10 +439,9 @@ angular.module('oi.select')
 
                 //COUNT AND FILTERS
                 scope.useResource  = resourceFnName != '';
-                scope.countRemainElements = 0;
                 scope.page = 1;
                 scope.$parent.$watch(attrs.countOnPage, function(value) {
-                     countOnPage = Number(value) || 20;
+                     scope.countOnPage = Number(value) || 20;
                 });
 
                 if (angular.isDefined(attrs.tabindex)) {
@@ -940,22 +938,25 @@ angular.module('oi.select')
                         $timeout.cancel(timeoutPromise); //cancel previous timeout
                     }
 
-                    scope.countRemainElements = 0;
-                    scope.page = 1
-                    if (resourceFnName != '' && query != undefined && query != null && resourceFn(scope.$parent).options) {
-                        params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
-                        resourceFn(scope.$parent).options(params.query, function(result){
-                            scope.countRemainElements = result.count;
-                        }, function(error){});
-                    }
-
                     timeoutPromise = $timeout(function() {
+
+                        scope.page = 1
+                        if (resourceFnName != '' && query != undefined && query != null && resourceFn(scope.$parent).options) {
+                            var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                            resourceFn(scope.$parent).options(params.query, function(result){
+                                scope.countPages = Math.ceil(result.count / scope.countOnPage);
+                            }, function(error){});
+                        }
+
                         var values;
                         if (resourceFnName == ''){
                             values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
                         } else {
-                            params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
-                            values = resourceFn(scope.$parent).query(selectedAs ? params.selectedAs : params.query) || '';
+                            var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                            params = selectedAs ? params.selectedAs : params.query;
+                            params.left = (scope.page - 1)*scope.countOnPage;
+                            params.right = (scope.page)*scope.countOnPage;
+                            values = resourceFn(scope.$parent).query(params) || '';
                         }
 
                         scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
@@ -1006,7 +1007,10 @@ angular.module('oi.select')
                 }
 
                 function loadElements(){
+                    if (scope.page >= scope.countPages) return;
                     scope.page++;
+
+                    //Add Custom logic for append elements in group and show preloader
                 };
 
                 function updateGroupPos() {
@@ -1171,4 +1175,4 @@ angular.module('oi.select')
         return input;
     };
 });
-angular.module("oi.select").run(["$templateCache", function($templateCache) {$templateCache.put("src/template.html","<div class=select-search><ul class=select-search-list><li class=\"btn btn-default btn-xs select-search-list-item select-search-list-item_selection\" ng-hide=listItemHide ng-repeat=\"item in output track by $index\" ng-class=\"{focused: backspaceFocus && $last}\" ng-click=removeItem($index) ng-bind-html=getSearchLabel(item)></li><li class=\"select-search-list-item select-search-list-item_input\" ng-class=\"{\'select-search-list-item_hide\': inputHide}\"><input autocomplete=off ng-model=query ng-keyup=keyUp($event) ng-keydown=keyDown($event)></li><li class=\"select-search-list-item select-search-list-item_loader\" ng-show=showLoader></li></ul></div><div class=select-dropdown ng-show=isOpen><ul ng-if=isOpen class=select-dropdown-optgroup ng-repeat=\"(group, options) in groups\"><div class=select-dropdown-optgroup-header ng-if=\"group && options.length\" ng-bind-html=\"getGroupLabel(group, options)\"></div><li class=select-dropdown-optgroup-option ng-init=\"isDisabled = getDisableWhen(option)\" ng-repeat=\"option in options\" ng-class=\"{\'active\': selectorPosition === groupPos[group] + $index, \'disabled\': isDisabled, \'ungroup\': !group}\" ng-click=\"isDisabled || addItem(option)\" ng-mouseenter=\"setSelection(groupPos[group] + $index)\" ng-bind-html=getDropdownLabel(option)></li></ul><button ng-if=useResource>Подгрузить ещё {{ countRemainElements }} элементов, страница {[{ page }]}</button></div>");}]);
+angular.module("oi.select").run(["$templateCache", function($templateCache) {$templateCache.put("src/template.html","<div class=select-search><ul class=select-search-list><li class=\"btn btn-default btn-xs select-search-list-item select-search-list-item_selection\" ng-hide=listItemHide ng-repeat=\"item in output track by $index\" ng-class=\"{focused: backspaceFocus && $last}\" ng-click=removeItem($index) ng-bind-html=getSearchLabel(item)></li><li class=\"select-search-list-item select-search-list-item_input\" ng-class=\"{\'select-search-list-item_hide\': inputHide}\"><input autocomplete=off ng-model=query ng-keyup=keyUp($event) ng-keydown=keyDown($event)></li><li class=\"select-search-list-item select-search-list-item_loader\" ng-show=showLoader></li></ul></div><div class=select-dropdown ng-show=isOpen><ul ng-if=isOpen class=select-dropdown-optgroup ng-repeat=\"(group, options) in groups\"><div class=select-dropdown-optgroup-header ng-if=\"group && options.length\" ng-bind-html=\"getGroupLabel(group, options)\"></div><li class=select-dropdown-optgroup-option ng-init=\"isDisabled = getDisableWhen(option)\" ng-repeat=\"option in options\" ng-class=\"{\'active\': selectorPosition === groupPos[group] + $index, \'disabled\': isDisabled, \'ungroup\': !group}\" ng-click=\"isDisabled || addItem(option)\" ng-mouseenter=\"setSelection(groupPos[group] + $index)\" ng-bind-html=getDropdownLabel(option)></li></ul><span><button ng-if=\"useResource && countPages > 1\">Загрузить</button> {[{ page }]} / {[{ countPages }]}</span></div>");}]);

@@ -383,7 +383,7 @@ angular.module('oi.select')
                 filteredValuesFn      = $parse(filteredValuesName),
                 valuesFn              = $parse(valuesFnName),
                 resourceFn            = $parse(resourceFnName),
-                paramsFn              = $parse(valueMatches[2].slice(1, valueMatches[2].length - 1) || ''),
+                paramsFn              = $parse(valueMatches[2] ? valueMatches[2].slice(1, valueMatches[2].length - 1) : ''),
                 trackByFn             = $parse(trackByName);
 
             var multiplePlaceholderFn = $interpolate(attrs.multiplePlaceholder || ''),
@@ -398,7 +398,6 @@ angular.module('oi.select')
                 removedItem,
                 multiple,
                 multipleLimit,
-                countOnPage,
                 newItemFn;
 
             return function(scope, element, attrs, ctrl) {
@@ -440,10 +439,9 @@ angular.module('oi.select')
 
                 //COUNT AND FILTERS
                 scope.useResource  = resourceFnName != '';
-                scope.countRemainElements = 0;
                 scope.page = 1;
                 scope.$parent.$watch(attrs.countOnPage, function(value) {
-                     countOnPage = Number(value) || 20;
+                     scope.countOnPage = Number(value) || 20;
                 });
 
                 if (angular.isDefined(attrs.tabindex)) {
@@ -940,22 +938,25 @@ angular.module('oi.select')
                         $timeout.cancel(timeoutPromise); //cancel previous timeout
                     }
 
-                    scope.countRemainElements = 0;
-                    scope.page = 1
-                    if (resourceFnName != '' && query != undefined && query != null && resourceFn(scope.$parent).options) {
-                        params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
-                        resourceFn(scope.$parent).options(params.query, function(result){
-                            scope.countRemainElements = result.count;
-                        }, function(error){});
-                    }
-
                     timeoutPromise = $timeout(function() {
+
+                        scope.page = 1
+                        if (resourceFnName != '' && query != undefined && query != null && resourceFn(scope.$parent).options) {
+                            var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                            resourceFn(scope.$parent).options(params.query, function(result){
+                                scope.countPages = Math.ceil(result.count / scope.countOnPage);
+                            }, function(error){});
+                        }
+
                         var values;
                         if (resourceFnName == ''){
                             values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
                         } else {
-                            params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
-                            values = resourceFn(scope.$parent).query(selectedAs ? params.selectedAs : params.query) || '';
+                            var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                            params = selectedAs ? params.selectedAs : params.query;
+                            params.left = (scope.page - 1)*scope.countOnPage;
+                            params.right = (scope.page)*scope.countOnPage;
+                            values = resourceFn(scope.$parent).query(params) || '';
                         }
 
                         scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
@@ -1006,7 +1007,10 @@ angular.module('oi.select')
                 }
 
                 function loadElements(){
+                    if (scope.page >= scope.countPages) return;
                     scope.page++;
+
+                    //Add Custom logic for append elements in group and show preloader
                 };
 
                 function updateGroupPos() {
