@@ -37,7 +37,7 @@ angular.module('oi.select')
                 filteredValuesFn      = $parse(filteredValuesName),
                 valuesFn              = $parse(valuesFnName),
                 resourceFn            = $parse(resourceFnName),
-                paramsFn              = $parse(valueMatches[2] ? valueMatches[2].slice(1, valueMatches[2].length - 1) : ''),
+                paramsFn              = $parse(valueMatches[2].slice(1, valueMatches[2].length - 1) || ''),
                 trackByFn             = $parse(trackByName);
 
             var multiplePlaceholderFn = $interpolate(attrs.multiplePlaceholder || ''),
@@ -473,7 +473,7 @@ angular.module('oi.select')
                     }
 
                     if (scope.isOpen && event.target.nodeName === 'BUTTON'){
-                        loadElements();
+                        loadElements(scope.query);
                     } else if (scope.isOpen && options.closeList && (event.target.nodeName !== 'INPUT' || !scope.query.length)) { //do not reset if you are editing the query
                         resetMatches({query: options.editItem && !editItemIsCorrected});
                         scope.$evalAsync();
@@ -594,7 +594,6 @@ angular.module('oi.select')
 
                     timeoutPromise = $timeout(function() {
 
-                        //TODO: По пробовать сделать вызов гет запроса полсе options.
                         scope.page = 1
                         if (resourceFnName != '' && query != undefined && query != null && resourceFn(scope.$parent).options) {
                             var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
@@ -608,9 +607,13 @@ angular.module('oi.select')
                             values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
                         } else {
                             var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
-                            params = selectedAs ? params.selectedAs : params.query;
-                            params.left = (scope.page - 1)*scope.countOnPage;
-                            params.right = (scope.page)*scope.countOnPage;
+                            if (selectedAs) {
+                                params = params.selectedAs;
+                            } else {
+                                params = params.query;
+                                params.left = (scope.page - 1)*scope.countOnPage;
+                                params.right = (scope.page)*scope.countOnPage;
+                            }
                             values = resourceFn(scope.$parent).query(params) || '';
                         }
 
@@ -661,11 +664,57 @@ angular.module('oi.select')
                     return timeoutPromise;
                 }
 
-                function loadElements(){
+                function loadElements(query){
                     if (scope.page >= scope.countPages) return;
                     scope.page++;
 
                     //Add Custom logic for append elements in group and show preloader
+                    timeoutPromise = $timeout(function() {
+
+                        var params = paramsFn(scope.$parent, {$query: query, $selectedAs: undefined});
+                        params = params.query;
+                        params.left = (scope.page - 1)*scope.countOnPage;
+                        params.right = (scope.page)*scope.countOnPage;
+                        values = resourceFn(scope.$parent).query(params) || '';
+
+                        scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
+
+                        scope.showLoader = true;
+
+                        return $q.when(values.$promise || values)
+                            .then(function(values) {
+                                var groups = {};
+
+                                if (values) {
+                                    var outputValues = multiple ? scope.output : [];
+                                    var filteredList = listFilter(oiUtils.objToArr(values), query, getLabel, listFilterOptionsFn(scope.$parent), element);
+                                    var withoutIntersection = oiUtils.intersection(filteredList, outputValues, trackBy, trackBy, true);
+                                    var filteredOutput;
+                                    if (resourceFnName == '') {
+                                        filteredOutput = filter(withoutIntersection);
+                                    } else {
+                                        filteredOutput = withoutIntersection;
+                                    }
+
+                                    groups = group(filteredOutput);
+                                    angular.forEach(groups, function(value, key){
+                                        scope.groups[key].push.apply(scope.groups[key], value);
+                                    });
+                                }
+                                updateGroupPos();
+
+                                return values;
+                            })
+                            .finally(function(){
+                                scope.showLoader = false;
+
+                                if (options.closeList && !options.cleanModel) { //case: prompt
+                                    $timeout(function() {
+                                        setOption(listElement, 0);
+                                    });
+                                }
+                            });
+                    });
                 };
 
                 function updateGroupPos() {
