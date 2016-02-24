@@ -37,7 +37,7 @@ angular.module('oi.select')
                 filteredValuesFn      = $parse(filteredValuesName),
                 valuesFn              = $parse(valuesFnName),
                 resourceFn            = $parse(resourceFnName),
-                paramsFn              = $parse(valueMatches[2].slice(1, valueMatches[2].length - 1) || ''),
+                paramsFn              = $parse(valueMatches[2]? valueMatches[2].slice(1, valueMatches[2].length - 1):''),
                 trackByFn             = $parse(trackByName);
 
             var multiplePlaceholderFn = $interpolate(attrs.multiplePlaceholder || ''),
