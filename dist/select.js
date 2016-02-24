@@ -372,7 +372,7 @@ angular.module('oi.select')
                 valueMatches          = match[8].match(VALUES_REGEXP);        //collection
 
             var valuesName            = valueMatches[1],                                    //collection()
-                resourceFnName        = valuesName[0] == '!' ? valuesName.slice(1) : '',   //collection
+                resourceFnName        = valuesName[0] == '!' ? valuesName.slice(1) : '',    //collection
                 filteredValuesName    = valuesName + (valueMatches[3] || ''),               //collection | filter
                 valuesFnName          = valuesName + (valueMatches[2] || '');               //collection()
 
@@ -383,7 +383,7 @@ angular.module('oi.select')
                 filteredValuesFn      = $parse(filteredValuesName),
                 valuesFn              = $parse(valuesFnName),
                 resourceFn            = $parse(resourceFnName),
-                paramsFn              = $parse(valueMatches[2]? valueMatches[2].slice(1, valueMatches[2].length - 1):''),
+                paramsFn              = $parse(valuesName[0] == '!' ? valueMatches[2].slice(1, valueMatches[2].length - 1) : ''),
                 trackByFn             = $parse(trackByName);
 
             var multiplePlaceholderFn = $interpolate(attrs.multiplePlaceholder || ''),
