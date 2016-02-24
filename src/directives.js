@@ -708,11 +708,11 @@ angular.module('oi.select')
                             .finally(function(){
                                 scope.showLoader = false;
 
-                                if (options.closeList && !options.cleanModel) { //case: prompt
-                                    $timeout(function() {
-                                        setOption(listElement, 0);
-                                    });
-                                }
+//                                if (options.closeList && !options.cleanModel) { //case: prompt
+//                                    $timeout(function() {
+//                                        setOption(listElement, 0);
+//                                    });
+//                                }
                             });
                     });
                 };
