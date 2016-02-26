@@ -28,5 +28,5 @@
             ng-mouseenter="setSelection(groupPos[group] + $index)"
             ng-bind-html="getDropdownLabel(option)"></li>
     </ul>
-    <span ng-if="useResource"><button ng-if="countPages > 1 && page < countPages">Загрузить</button> {{ page }} / {{ countPages }}</span>
+    <span ng-if="useResource"><button ng-if="countPages > 1 && page < countPages">Загрузить</button> {[{ page }]} / {[{ countPages }]}</span>
 </div>
