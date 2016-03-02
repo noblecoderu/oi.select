@@ -1044,7 +1044,11 @@ angular.module('oi.select')
 
                                     groups = group(filteredOutput);
                                     angular.forEach(groups, function(value, key){
-                                        scope.groups[key].push.apply(scope.groups[key], value);
+                                        if (key in scope.groups){
+                                            scope.groups[key].push.apply(scope.groups[key], value);
+                                        } else {
+                                            scope.groups[key] = value;
+                                        }
                                     });
                                 }
                                 updateGroupPos();
@@ -1053,12 +1057,6 @@ angular.module('oi.select')
                             })
                             .finally(function(){
                                 scope.showLoader = false;
-
-//                                if (options.closeList && !options.cleanModel) { //case: prompt
-//                                    $timeout(function() {
-//                                        setOption(listElement, 0);
-//                                    });
-//                                }
                             });
                     });
                 };
