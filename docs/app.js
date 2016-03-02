@@ -4,7 +4,8 @@ angular.module('selectDemo', ['oi.select', 'ngResource', 'hljs', 'gettext' /*, '
 
     .factory('ShopArr', function ($resource) {
         return $resource(URL + 'data/shopArr.json', {}, {
-                query: {method: 'GET', cache: true, isArray: true}
+                query: {method: 'GET', cache: true, isArray: true},
+                option: {method: 'OPTION', cache: true}
             }
         );
     })
@@ -32,6 +33,8 @@ angular.module('selectDemo', ['oi.select', 'ngResource', 'hljs', 'gettext' /*, '
 
     .controller('selectDocsController', function ($scope, $location) {
         var menu = [
+            {urlName: 'selectas',        name: 'Select as'},
+            {urlName: '!resource',       name: '!!Resource!!'},
             {urlName: 'autofocus',       name: 'Autofocus'},
             {urlName: 'multiple',        name: 'Multiple'},
             {urlName: 'single',          name: 'Single'},
@@ -46,7 +49,6 @@ angular.module('selectDemo', ['oi.select', 'ngResource', 'hljs', 'gettext' /*, '
             {urlName: 'createitems',     name: 'Create items'},
             {urlName: 'autocomplete',    name: 'Autocomplete'},
             {urlName: 'prompt',          name: 'Prompt'},
-            {urlName: 'selectas',        name: 'Select as'},
             {urlName: 'editableoptions', name: 'Editable options'},
             {urlName: 'customization',   name: 'Customization'},
             {urlName: 'validation',      name: 'Validation'},

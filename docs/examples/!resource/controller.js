@@ -1,15 +1,18 @@
 angular.module('selectDemo')
-    .controller('selectSelectasController', function ($scope, $q, $timeout, ShopArr) {
+    .controller('selectResourceController', function ($scope, $q, $timeout, ShopArr) {
 
-        $scope.shopArr = ShopArr.query();
+        $scope.shopArr = ShopArr;
 
-        $scope.shopArrFn = function(query, querySelectAs) {
-            if (querySelectAs) {
-                return getOptionsById(querySelectAs);
+        $scope.getQuery = function(query){
+            return {
+                name: query
+            };
+        };
 
-            } else {
-                return findOptions(query);
-            }
+        $scope.getSelectedAs = function(selectedAs){
+            return {
+                id__in: selectedAs
+            };
         };
 
         var counter = 15;
@@ -67,5 +70,5 @@ angular.module('selectDemo')
             return deferred.promise;
         }
 
-        $scope.bundle = undefined;
+        $scope.bundle = [4,2,3];
     });

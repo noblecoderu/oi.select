@@ -25,9 +25,10 @@ angular.module('oi.select')
                 trackByName           = match[9] || displayName,              //item.id
                 valueMatches          = match[8].match(VALUES_REGEXP);        //collection
 
-            var valuesName            = valueMatches[1],                      //collection
-                filteredValuesName    = valuesName + (valueMatches[3] || ''), //collection | filter
-                valuesFnName          = valuesName + (valueMatches[2] || ''); //collection()
+            var valuesName            = valueMatches[1],                                    //collection()
+                resourceFnName        = valuesName[0] == '!' ? valuesName.slice(1) : '',    //collection
+                filteredValuesName    = valuesName + (valueMatches[3] || ''),               //collection | filter
+                valuesFnName          = valuesName + (valueMatches[2] || '');               //collection()
 
             var selectAsFn            = selectAsName && $parse(selectAsName),
                 displayFn             = $parse(displayName),
@@ -35,6 +36,8 @@ angular.module('oi.select')
                 disableWhenFn         = $parse(disableWhenName),
                 filteredValuesFn      = $parse(filteredValuesName),
                 valuesFn              = $parse(valuesFnName),
+                resourceFn            = $parse(resourceFnName),
+                paramsFn              = $parse(valuesName[0] == '!' ? valueMatches[2].slice(1, valueMatches[2].length - 1) : ''),
                 trackByFn             = $parse(trackByName);
 
             var multiplePlaceholderFn = $interpolate(attrs.multiplePlaceholder || ''),
@@ -86,6 +89,20 @@ angular.module('oi.select')
                 match = options.groupFilter.split(':');
                 var groupFilter = $filter(match[0]),
                     groupFilterOptionsFn = $parse(match[1]);
+
+
+                //COUNT AND FILTERS
+                scope.useResource  = resourceFnName != '';
+                scope.page = 1;
+                scope.$parent.$watch(attrs.countOnPage, function(value) {
+                     scope.countOnPage = Number(value) || 20;
+                });
+
+                if (angular.isDefined(attrs.tabindex)) {
+                    inputElement.attr('tabindex', attrs.tabindex);
+                    element[0].removeAttribute('tabindex');
+                }
+
 
                 if (options.newItemFn) {
                     newItemFn = $parse(options.newItemFn);
@@ -455,7 +472,9 @@ angular.module('oi.select')
                         scope.removeItem(0); //because click on border (not on chosen item) doesn't remove chosen element
                     }
 
-                    if (scope.isOpen && options.closeList && (event.target.nodeName !== 'INPUT' || !scope.query.length)) { //do not reset if you are editing the query
+                    if (scope.isOpen && event.target.nodeName === 'BUTTON'){
+                        loadElements(scope.query);
+                    } else if (scope.isOpen && options.closeList && (event.target.nodeName !== 'INPUT' || !scope.query.length)) { //do not reset if you are editing the query
                         resetMatches({query: options.editItem && !editItemIsCorrected});
                         scope.$evalAsync();
                     } else {
@@ -574,7 +593,29 @@ angular.module('oi.select')
                     }
 
                     timeoutPromise = $timeout(function() {
-                        var values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
+
+                        scope.page = 1
+                        if (resourceFnName != '' && query != undefined && query != null && resourceFn(scope.$parent).options) {
+                            var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                            resourceFn(scope.$parent).options(params.query, function(result){
+                                scope.countPages = Math.ceil(result.count / scope.countOnPage);
+                            }, function(error){});
+                        }
+
+                        var values;
+                        if (resourceFnName == ''){
+                            values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
+                        } else {
+                            var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                            if (selectedAs) {
+                                params = params.selectedAs;
+                            } else {
+                                params = params.query;
+                                params.left = (scope.page - 1)*scope.countOnPage;
+                                params.right = (scope.page)*scope.countOnPage;
+                            }
+                            values = resourceFn(scope.$parent).query(params) || '';
+                        }
 
                         scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
 
@@ -596,7 +637,12 @@ angular.module('oi.select')
                                     var outputValues = multiple ? scope.output : [];
                                     var filteredList = listFilter(oiUtils.objToArr(values), query, getLabel, listFilterOptionsFn(scope.$parent), element);
                                     var withoutIntersection = oiUtils.intersection(filteredList, outputValues, trackBy, trackBy, true);
-                                    var filteredOutput = filter(withoutIntersection);
+                                    var filteredOutput;
+                                    if (resourceFnName == '') {
+                                        filteredOutput = filter(withoutIntersection);
+                                    } else {
+                                        filteredOutput = withoutIntersection;
+                                    }
 
                                     scope.groups = group(filteredOutput);
                                 }
@@ -617,6 +663,57 @@ angular.module('oi.select')
 
                     return timeoutPromise;
                 }
+
+                function loadElements(query){
+                    if (scope.page >= scope.countPages) return;
+                    scope.page++;
+
+                    //Add Custom logic for append elements in group and show preloader
+                    timeoutPromise = $timeout(function() {
+
+                        var params = paramsFn(scope.$parent, {$query: query, $selectedAs: undefined});
+                        params = params.query;
+                        params.left = (scope.page - 1)*scope.countOnPage;
+                        params.right = (scope.page)*scope.countOnPage;
+                        values = resourceFn(scope.$parent).query(params) || '';
+
+                        scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
+
+                        scope.showLoader = true;
+
+                        return $q.when(values.$promise || values)
+                            .then(function(values) {
+                                var groups = {};
+
+                                if (values) {
+                                    var outputValues = multiple ? scope.output : [];
+                                    var filteredList = listFilter(oiUtils.objToArr(values), query, getLabel, listFilterOptionsFn(scope.$parent), element);
+                                    var withoutIntersection = oiUtils.intersection(filteredList, outputValues, trackBy, trackBy, true);
+                                    var filteredOutput;
+                                    if (resourceFnName == '') {
+                                        filteredOutput = filter(withoutIntersection);
+                                    } else {
+                                        filteredOutput = withoutIntersection;
+                                    }
+
+                                    groups = group(filteredOutput);
+                                    angular.forEach(groups, function(value, key){
+                                        if (key in scope.groups){
+                                            scope.groups[key].push.apply(scope.groups[key], value);
+                                        } else {
+                                            scope.groups[key] = value;
+                                        }
+                                    });
+                                }
+                                updateGroupPos();
+
+                                return values;
+                            })
+                            .finally(function(){
+                                scope.showLoader = false;
+                            });
+                    });
+                };
 
                 function updateGroupPos() {
                     var i, key, value, collectionKeys = [], groupCount = 0;
