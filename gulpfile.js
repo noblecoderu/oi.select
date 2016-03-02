@@ -9,11 +9,9 @@ var templateCache = require('gulp-angular-templatecache');
 var minifyCss     = require('gulp-minify-css');
 var minifyHtml    = require('gulp-minify-html');
 var uglify        = require('gulp-uglify');
-var stylus        = require('gulp-stylus');
+var less          = require('gulp-less');
 var KarmaServer   = require('karma').Server;
-var autoprefixer  = require('autoprefixer-stylus')({
-    browsers: ["ff >= 20", "chrome >= 35", "safari >= 7", "ios >= 7", "android >= 4", "opera >= 12.1", "ie >= 10"]
-});
+var autoprefixer  = require('gulp-autoprefixer');
 
 var paths = {
     root:     __dirname,
@@ -36,11 +34,13 @@ gulp.task('clean', function() {
 });
 
 gulp.task('compileStyles', function() {
-    return gulp.src(path.join(paths.src, 'style.styl'))
-        .pipe(stylus({
-            use: autoprefixer
-        }))
+    return gulp.src(path.join(paths.src, 'style.less'))
+        .pipe(less())
         .pipe(concat('select.css'))
+        .pipe(autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
         .pipe(gulp.dest(paths.dist))
         .pipe(minifyCss())
         .pipe(rename('select.min.css'))
