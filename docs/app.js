@@ -54,7 +54,8 @@ angular.module('selectDemo', ['oi.select', 'ngResource', 'hljs', 'gettext' /*, '
             {urlName: 'validation',      name: 'Validation'},
             {urlName: 'translate',       name: 'Translate'},
             {urlName: 'funny',           name: 'Funny'},
-            {urlName: 'all',             name: 'All'}
+            {urlName: 'all',             name: 'All'},
+            {urlName: '!resource',             name: '!!Resource!!'}
         ];
 
         $scope.demo = {};
