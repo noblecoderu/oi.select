@@ -5,6 +5,11 @@ oi-select {
     position: relative;
     width: 100%;
 
+    &.ng-invalid .select-search {
+        border-color: @red;
+        box-shadow: 0 3px 6px fade(@red, 15%);
+    }
+
     .select {
         &-search {
             cursor: text;
@@ -33,7 +38,7 @@ oi-select {
 
                     &_selection {
                         cursor: pointer;
-                        background: @ultralightgray;
+                        background: @lightgray;
                         color: @darkgray;
                         border-radius: @select-border-radius;
                         padding: 0 5px;
@@ -54,7 +59,16 @@ oi-select {
                         }
 
                         &-remove {
-                            padding-left: 2px;
+                            margin: 4px 0 0 2px;
+                            display: inline-block;
+                            width: 16px;
+                            height: 16px;
+                            background-size: contain;
+                            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAFVBMVEUAAAAzMzMsLCwsLCwsLCwsLCwsLCyYZyYLAAAABnRSTlMABVGorvpvcGabAAAAT0lEQVR42u2RMQ4AIAgDFaT/f7JGuylp2O0iyV0i1vZTTnc7g3l/8oGwzQPjZTiwjM0BvzBBGI+WGjmnQZ4Z5FrQV8gl5TNlUbJq+Vk/1Uwb6wJ59zQ2QgAAAABJRU5ErkJggg==);
+                        }
+
+                        &-label {
+                            display: inline-block;
                         }
                     }
 
@@ -135,6 +149,11 @@ oi-select {
 
                     &.disabled {
                         color: @mediumgray;
+                    }
+
+                    strong {
+                        font-weight: normal;
+                        background: fade(@yellow, 40%);
                     }
                 }
             }
