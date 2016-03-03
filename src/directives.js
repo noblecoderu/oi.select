@@ -763,7 +763,8 @@ angular.module('oi.select')
 
                 function setOption(listElement, position) {
                     scope.selectorPosition = position;
-                    oiUtils.scrollActiveOption(listElement[0], listElement.find('li')[position]);
+                    oiUtils.scrollActiveOption(listElement[0],
+                                               listElement.find('.select-dropdown-optgroup-option')[position]);
                 }
 
                 function group(input) {
