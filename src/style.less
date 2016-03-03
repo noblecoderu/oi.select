@@ -4,6 +4,8 @@ oi-select {
     display: block;
     position: relative;
     width: 100%;
+    font-size: 14px;
+    font-family: "Helvetica Neue", Helvetica, Arial;
 
     &.ng-invalid .select-search {
         border-color: @red;
@@ -19,6 +21,7 @@ oi-select {
             box-sizing: border-box;
             border-radius: @select-border-radius;
             height: 100%;
+            font-size: inherit;
 
             &-list {
                 display: flex;
@@ -31,10 +34,10 @@ oi-select {
                 box-sizing: border-box;
 
                 &-item {
-                    font-size: 14px;
                     margin: 2px 4px 2px 0;
                     vertical-align: middle;
                     white-space: normal;
+                    font-size: inherit;
 
                     &_selection {
                         cursor: pointer;
@@ -45,6 +48,7 @@ oi-select {
                         height: 25px;
                         line-height: 25px;
                         box-sizing: border-box;
+                        font-size: inherit;
 
                         &:hover {
                             color: @darkgray;
@@ -54,13 +58,13 @@ oi-select {
                             background: @white;
                         }
 
-                        &.focused .close {
+                        &.focused .close-button {
                             display: none;
                         }
 
                         &-remove {
-                            margin: 4px 0 0 2px;
                             display: inline-block;
+                            vertical-align: middle;
                             width: 16px;
                             height: 16px;
                             background-size: contain;
@@ -69,6 +73,10 @@ oi-select {
 
                         &-label {
                             display: inline-block;
+                            font-size: inherit;
+                            vertical-align: middle;
+                            height: inherit;
+                            line-height: inherit;
                         }
                     }
 
@@ -92,6 +100,7 @@ oi-select {
                             outline: 0;
                             border: 0;
                             width: 100%;
+                            font-size: inherit;
                         }
                     }
 
@@ -123,6 +132,7 @@ oi-select {
             background-clip: padding-box;
             z-index: 1000;
             box-shadow: 0 3px 6px fade(@blue, 15%);
+            box-sizing: border-box;
 
             &.ng-enter, &.ng-leave {
                 transition: 0.2s linear all;
@@ -280,5 +290,9 @@ oi-select {
         .select-search:after {
             border-width: 0;
         }
+    }
+
+    &.medium {
+        font-size: 14px;
     }
 }

@@ -2,6 +2,8 @@ oi-select {
   display: block;
   position: relative;
   width: 100%;
+  font-size: 14px;
+  font-family: "Helvetica Neue", Helvetica, Arial;
 }
 oi-select.ng-invalid .select-search {
   border-color: #eb5055;
@@ -15,6 +17,7 @@ oi-select .select-search {
   box-sizing: border-box;
   border-radius: 3px;
   height: 100%;
+  font-size: inherit;
 }
 oi-select .select-search-list {
   display: -webkit-flex;
@@ -33,10 +36,10 @@ oi-select .select-search-list {
   box-sizing: border-box;
 }
 oi-select .select-search-list-item {
-  font-size: 14px;
   margin: 2px 4px 2px 0;
   vertical-align: middle;
   white-space: normal;
+  font-size: inherit;
 }
 oi-select .select-search-list-item_selection {
   cursor: pointer;
@@ -47,6 +50,7 @@ oi-select .select-search-list-item_selection {
   height: 25px;
   line-height: 25px;
   box-sizing: border-box;
+  font-size: inherit;
 }
 oi-select .select-search-list-item_selection:hover {
   color: #2C2C2C;
@@ -54,12 +58,12 @@ oi-select .select-search-list-item_selection:hover {
 oi-select .select-search-list-item_selection.focused {
   background: #FFFFFF;
 }
-oi-select .select-search-list-item_selection.focused .close {
+oi-select .select-search-list-item_selection.focused .close-button {
   display: none;
 }
 oi-select .select-search-list-item_selection-remove {
-  margin: 4px 0 0 2px;
   display: inline-block;
+  vertical-align: middle;
   width: 16px;
   height: 16px;
   background-size: contain;
@@ -67,6 +71,10 @@ oi-select .select-search-list-item_selection-remove {
 }
 oi-select .select-search-list-item_selection-label {
   display: inline-block;
+  font-size: inherit;
+  vertical-align: middle;
+  height: inherit;
+  line-height: inherit;
 }
 oi-select .select-search-list-item_loader {
   position: absolute;
@@ -88,6 +96,7 @@ oi-select .select-search-list-item_input input {
   outline: 0;
   border: 0;
   width: 100%;
+  font-size: inherit;
 }
 oi-select .select-search-list-item_hide {
   position: fixed;
@@ -113,6 +122,7 @@ oi-select .select-dropdown {
   background-clip: padding-box;
   z-index: 1000;
   box-shadow: 0 3px 6px rgba(68, 155, 181, 0.15);
+  box-sizing: border-box;
 }
 oi-select .select-dropdown.ng-enter,
 oi-select .select-dropdown.ng-leave {
@@ -213,4 +223,7 @@ oi-select.open:not(.multiple) .select-search:after {
 }
 oi-select.loading:not(.multiple) .select-search:after {
   border-width: 0;
+}
+oi-select.medium {
+  font-size: 14px;
 }
