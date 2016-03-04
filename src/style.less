@@ -182,9 +182,21 @@ oi-select {
                             width: 100%;
                             text-align: left;
                             background: none;
+                            height: auto;
+                            line-height: inherit;
 
                             &:not(:active) {
                                 background: none;
+                            }
+
+                            &-remove {
+                                display: block;
+                                position: absolute;
+                                right: 10px;
+                                top: 50%;
+                                margin-top: -8px;
+                                cursor: pointer;
+                                z-index: 99;
                             }
                         }
                     }

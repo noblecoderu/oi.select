@@ -166,6 +166,15 @@ oi-select:not(.multiple) .select-search-list-item_selection {
 oi-select:not(.multiple) .select-search-list-item_selection:not(:active) {
   background: none;
 }
+oi-select:not(.multiple) .select-search-list-item_selection-remove {
+  display: block;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  margin-top: -8px;
+  cursor: pointer;
+  z-index: 99;
+}
 oi-select:not(.multiple):not(.cleanMode) .select-search-list-item_selection-remove {
   display: none;
 }
