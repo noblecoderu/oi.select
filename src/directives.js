@@ -611,8 +611,8 @@ angular.module('oi.select')
                                 params = params.selectedAs;
                             } else {
                                 params = params.query;
-                                params.left = (scope.page - 1)*scope.countOnPage;
-                                params.right = (scope.page)*scope.countOnPage;
+                                params.offset = (scope.page - 1)*scope.countOnPage;
+                                params.limit = scope.countOnPage;
                             }
                             values = resourceFn(scope.$parent).query(params) || '';
                         }

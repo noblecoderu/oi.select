@@ -957,8 +957,8 @@ angular.module('oi.select')
                                 params = params.selectedAs;
                             } else {
                                 params = params.query;
-                                params.left = (scope.page - 1)*scope.countOnPage;
-                                params.right = (scope.page)*scope.countOnPage;
+                                params.offset = (scope.page - 1)*scope.countOnPage;
+                                params.limit = scope.countOnPage;
                             }
                             values = resourceFn(scope.$parent).query(params) || '';
                         }
@@ -1109,7 +1109,8 @@ angular.module('oi.select')
 
                 function setOption(listElement, position) {
                     scope.selectorPosition = position;
-                    oiUtils.scrollActiveOption(listElement[0], listElement.find('li')[position]);
+                    oiUtils.scrollActiveOption(listElement[0],
+                                               listElement.find('.select-dropdown-optgroup-option')[position]);
                 }
 
                 function group(input) {

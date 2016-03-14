@@ -162,6 +162,8 @@ oi-select:not(.multiple) .select-search-list-item_selection {
   width: 100%;
   text-align: left;
   background: none;
+  height: auto;
+  line-height: inherit;
 }
 oi-select:not(.multiple) .select-search-list-item_selection:not(:active) {
   background: none;
