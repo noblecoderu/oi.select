@@ -97,6 +97,7 @@ oi-select .select-search-list-item_input input {
   border: 0;
   width: 100%;
   font-size: inherit;
+  vertical-align: middle;
 }
 oi-select .select-search-list-item_hide {
   position: fixed;
@@ -153,9 +154,10 @@ oi-select .select-dropdown-optgroup-option strong {
   background: rgba(241, 196, 15, 0.4);
 }
 oi-select:not(.multiple) .select-search-list {
-  -webkit-align-content: center;
-  -ms-flex-line-pack: center;
-  align-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  -ms-grid-row-align: center;
+  align-items: center;
 }
 oi-select:not(.multiple) .select-search-list-item_selection {
   color: #2C2C2C;

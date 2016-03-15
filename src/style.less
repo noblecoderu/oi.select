@@ -93,7 +93,8 @@ oi-select {
 
                     &_input {
                         flex-grow: 1;
-                        margin: 4px 0 5px 5px;
+                        margin: 0 0 0 5px;
+                        align-items: center;
 
                         input {
                             padding: 0;
@@ -101,6 +102,7 @@ oi-select {
                             border: 0;
                             width: 100%;
                             font-size: inherit;
+                            vertical-align: middle;
                         }
                     }
 
@@ -174,16 +176,15 @@ oi-select {
         .select {
             &-search {
                 &-list {
-                    align-content: center;
+                    align-items: center;
 
                     &-item {
+
                         &_selection {
                             color: @darkgray;
                             width: 100%;
                             text-align: left;
                             background: none;
-                            height: auto;
-                            line-height: inherit;
 
                             &:not(:active) {
                                 background: none;
