@@ -4,6 +4,7 @@ oi-select {
     display: block;
     position: relative;
     width: 100%;
+    min-height: 35px;
     font-size: 14px;
     font-family: "Helvetica Neue", Helvetica, Arial;
 
@@ -94,7 +95,9 @@ oi-select {
                     &_input {
                         flex-grow: 1;
                         margin: 0 0 0 5px;
+                        display: flex;
                         align-items: center;
+                        height: 29px;
 
                         input {
                             padding: 0;
@@ -102,7 +105,6 @@ oi-select {
                             border: 0;
                             width: 100%;
                             font-size: inherit;
-                            vertical-align: middle;
                         }
                     }
 
@@ -121,9 +123,9 @@ oi-select {
 
         &-dropdown {
             position: absolute;
-            width: inherit;
             overflow-y: scroll;
             max-height: 150px;
+            width: 100%;
             min-width: 160px;
             font-size: 14px;
             background-color: @white;
@@ -173,18 +175,29 @@ oi-select {
     }
 
     &:not(.multiple) {
+        min-height: 30px;
+        height: 30px;
+
         .select {
             &-search {
+                min-height: 30px;
+
                 &-list {
                     align-items: center;
 
                     &-item {
+
+                        &_input {
+                            height: auto;
+                        }
 
                         &_selection {
                             color: @darkgray;
                             width: 100%;
                             text-align: left;
                             background: none;
+                            height: auto;
+                            line-height: normal;
 
                             &:not(:active) {
                                 background: none;
