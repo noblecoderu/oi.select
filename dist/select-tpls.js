@@ -942,7 +942,7 @@ angular.module('oi.select')
 
                         scope.page = 1
                         if (resourceFnName != '' && query != undefined && query != null && resourceFn(scope.$parent).options) {
-                            var params = paramsFn(scope.$parent, {$query: query});
+                            var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
                             resourceFn(scope.$parent).options(params.query, function(result){
                                 scope.countPages = Math.ceil(result.count / scope.countOnPage);
                             }, function(error){});
@@ -952,8 +952,10 @@ angular.module('oi.select')
                         if (resourceFnName == ''){
                             values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
                         } else {
-                            var params = paramsFn(scope.$parent, {$query: query});
-                            if (selectedAs) {
+                            var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                            if (selectedAs && params.selectedAs) { //Когда функцию отправили кастомную
+                                params = params.selectedAs;
+                            } else if (selectedAs && !params.selectedAs){ // Когда функция стандартная
                                 if( Object.prototype.toString.call(selectedAs) === '[object Array]' ) {
                                     params = {
                                         id__in: []
@@ -975,8 +977,6 @@ angular.module('oi.select')
                                         id: selectedAs.id
                                     };
                                 }
-                                return params;
-                                params = params.selectedAs;
                             } else {
                                 params = params.query;
                                 params.offset = (scope.page - 1)*scope.countOnPage;
@@ -1039,7 +1039,7 @@ angular.module('oi.select')
                     //Add Custom logic for append elements in group and show preloader
                     timeoutPromise = $timeout(function() {
 
-                        var params = paramsFn(scope.$parent, {$query: query});
+                        var params = paramsFn(scope.$parent, {$query: query, $selectedAs: undefined});
                         params = params.query;
                         params.offset = (scope.page - 1)*scope.countOnPage;
                         params.limit = scope.countOnPage;
