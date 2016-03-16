@@ -195,7 +195,9 @@ angular.module('oi.select')
                     promise.then(function(collection) {
                         scope.output = collection;
 
-                        if (collection.length !== output.length) {
+                        if (selectAsFn && exists(value) && collection.length == 0 && output.length > 0) {
+                            ctrl.$setViewValue(undefined);
+                        } else if (collection.length !== output.length) {
                             scope.removeItem(collection.length); //if newItem was not created
                         }
                     });
