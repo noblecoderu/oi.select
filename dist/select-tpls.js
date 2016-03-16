@@ -942,7 +942,7 @@ angular.module('oi.select')
 
                         scope.page = 1
                         if (resourceFnName != '' && query != undefined && query != null && resourceFn(scope.$parent).options) {
-                            var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                            var params = paramsFn(scope.$parent, {$query: query});
                             resourceFn(scope.$parent).options(params.query, function(result){
                                 scope.countPages = Math.ceil(result.count / scope.countOnPage);
                             }, function(error){});
@@ -952,8 +952,30 @@ angular.module('oi.select')
                         if (resourceFnName == ''){
                             values = valuesFn(scope.$parent, {$query: query, $selectedAs: selectedAs}) || '';
                         } else {
-                            var params = paramsFn(scope.$parent, {$query: query, $selectedAs: selectedAs});
+                            var params = paramsFn(scope.$parent, {$query: query});
                             if (selectedAs) {
+                                if( Object.prototype.toString.call(selectedAs) === '[object Array]' ) {
+                                    params = {
+                                        id__in: []
+                                    };
+                                    for (var i = 0; i < selectedAs.length; i++){
+                                        if (typeof selectedAs[i] == "string"){
+                                            params.id__in.push(selectedAs[i]);
+                                        } else {
+                                             params.id__in.push(selectedAs[i].id);
+                                        }
+                                    }
+                                    params.id__in = JSON.stringify(params.id__in);
+                                } else if (typeof selectedAs == "string"){
+                                    params = {
+                                        id: selectedAs
+                                    };
+                                } else {
+                                    params = {
+                                        id: selectedAs.id
+                                    };
+                                }
+                                return params;
                                 params = params.selectedAs;
                             } else {
                                 params = params.query;
@@ -1017,7 +1039,7 @@ angular.module('oi.select')
                     //Add Custom logic for append elements in group and show preloader
                     timeoutPromise = $timeout(function() {
 
-                        var params = paramsFn(scope.$parent, {$query: query, $selectedAs: undefined});
+                        var params = paramsFn(scope.$parent, {$query: query});
                         params = params.query;
                         params.offset = (scope.page - 1)*scope.countOnPage;
                         params.limit = scope.countOnPage;
