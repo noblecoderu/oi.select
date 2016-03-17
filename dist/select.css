@@ -71,9 +71,7 @@ oi-select .select-search-list-item_selection-remove {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAFVBMVEUAAAAzMzMsLCwsLCwsLCwsLCwsLCyYZyYLAAAABnRSTlMABVGorvpvcGabAAAAT0lEQVR42u2RMQ4AIAgDFaT/f7JGuylp2O0iyV0i1vZTTnc7g3l/8oGwzQPjZTiwjM0BvzBBGI+WGjmnQZ4Z5FrQV8gl5TNlUbJq+Vk/1Uwb6wJ59zQ2QgAAAABJRU5ErkJggg==);
 }
 oi-select .select-search-list-item_selection-label {
-  display: inline-block;
   font-size: inherit;
-  vertical-align: middle;
   height: inherit;
   line-height: inherit;
 }
