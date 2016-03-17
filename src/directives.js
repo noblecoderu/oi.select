@@ -614,23 +614,23 @@ angular.module('oi.select')
                             } else if (selectedAs && !params.selectedAs){ // Когда функция стандартная
                                 if( Object.prototype.toString.call(selectedAs) === '[object Array]' ) {
                                     params = {
-                                        id__in: []
+                                        items: []
                                     };
                                     for (var i = 0; i < selectedAs.length; i++){
                                         if (typeof selectedAs[i] == "string"){
-                                            params.id__in.push(selectedAs[i]);
+                                            params.items.push(selectedAs[i]);
                                         } else {
-                                             params.id__in.push(selectedAs[i].id);
+                                             params.items.push(selectedAs[i].id);
                                         }
                                     }
-                                    params.id__in = JSON.stringify(params.id__in);
+                                    params.items = JSON.stringify(params.items);
                                 } else if (typeof selectedAs == "string"){
                                     params = {
-                                        id: selectedAs
+                                        items: JSON.stringify([selectedAs])
                                     };
                                 } else {
                                     params = {
-                                        id: selectedAs.id
+                                        items: JSON.stringify([selectedAs.id])
                                     };
                                 }
                             } else {
