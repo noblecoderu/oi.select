@@ -52,6 +52,7 @@ oi-select .select-search-list-item_selection {
   line-height: 25px;
   box-sizing: border-box;
   font-size: inherit;
+  white-space: nowrap;
 }
 oi-select .select-search-list-item_selection:hover {
   color: #2C2C2C;
