@@ -519,7 +519,15 @@ angular.module('oi.select')
                     var output = compact(value),
                         promise = $q.when(output);
 
-                    if (angular.isUndefined(scope.selectedCollections)) scope.selectedCollections = angular.copy(ctrl.$modelValue);
+                    if (angular.isUndefined(scope.selectedCollections)) {
+                        if (angular.isUndefined(ctrl.$modelValue)){
+                            scope.selectedCollections = [];
+                        } else if (angular.isArray(ctrl.$modelValue)){
+                            scope.selectedCollections = angular.copy(ctrl.$modelValue);
+                        } else {
+                            scope.selectedCollections = [angular.copy(ctrl.$modelValue)];
+                        }
+                    }
 
                     modifyPlaceholder();
 
