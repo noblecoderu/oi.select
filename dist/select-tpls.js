@@ -438,7 +438,7 @@ angular.module('oi.select')
 
                 //COLLECTIONS
                 scope.selectedCollections = undefined;
-                cacheCollections = {};
+                scope.cacheCollections = undefined;
 
                 //COUNT AND FILTERS
                 scope.useResource  = resourceFnName != '';
@@ -1000,7 +1000,11 @@ angular.module('oi.select')
                                 params.offset = (scope.page - 1)*scope.countOnPage;
                                 params.limit = scope.countOnPage;
                             }
-                            values = resourceFn(scope.$parent).query(params) || '';
+                            if (!query && angular.isArray(scope.cacheCollections)){
+                                values = angular.copy(scope.cacheCollections);
+                            } else {
+                                values = resourceFn(scope.$parent).query(params) || '';
+                            }
                         }
 
                         scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
@@ -1018,6 +1022,10 @@ angular.module('oi.select')
                         return $q.when(values.$promise || values)
                             .then(function(values) {
                                 scope.groups = {};
+
+                                if (angular.isUndefined(scope.cacheCollections)){
+                                    scope.cacheCollections = angular.copy(values);
+                                }
 
                                 if (values && !selectedAs) {
                                     var outputValues = multiple ? scope.output : [];
