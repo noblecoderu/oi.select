@@ -436,6 +436,9 @@ angular.module('oi.select')
                 var groupFilter = $filter(match[0]),
                     groupFilterOptionsFn = $parse(match[1]);
 
+                //COLLECTIONS
+                scope.selectedCollections = undefined;
+                cacheCollections = {};
 
                 //COUNT AND FILTERS
                 scope.useResource  = resourceFnName != '';
@@ -516,6 +519,8 @@ angular.module('oi.select')
                     var output = compact(value),
                         promise = $q.when(output);
 
+                    if (angular.isUndefined(scope.selectedCollections)) scope.selectedCollections = angular.copy(ctrl.$modelValue);
+
                     modifyPlaceholder();
 
                     if (exists(oldValue) && value !== oldValue) {
@@ -527,11 +532,15 @@ angular.module('oi.select')
                     }
 
                     if (selectAsFn && exists(value)) {
-                        promise = getMatches(null, value)
-                            .then(function(collection) {
-                                return oiUtils.intersection(output, collection, null, selectAs);
-                            });
-                        timeoutPromise = null; //`resetMatches` should not cancel the `promise`
+                        if (!scope.useResource) {
+                            promise = getMatches(null, value)
+                                .then(function(collection) {
+                                    return oiUtils.intersection(output, collection, null, selectAs);
+                                });
+                            timeoutPromise = null; //`resetMatches` should not cancel the `promise`
+                        } else {
+                            oiUtils.intersection(output, scope.selectedCollections, null, selectAs);
+                        }
                     }
 
                     if (multiple && attrs.disabled && !exists(value)) { //case: multiple, disabled=true + remove all items
@@ -599,6 +608,7 @@ angular.module('oi.select')
 
                 scope.addItem = function addItem(option) {
                     lastQuery = scope.query;
+                    scope.selectedCollections.push(option);
 
                     //duplicate
                     if (multiple && oiUtils.intersection(scope.output, [option], trackBy, trackBy).length) return;
@@ -642,6 +652,12 @@ angular.module('oi.select')
                     if (attrs.disabled || multiple && position < 0) return;
 
                     removedItem = multiple ? ctrl.$modelValue[position] : ctrl.$modelValue;
+
+                    newSelectedCollections = [];
+                    angular.forEach(scope.selectedCollections, function(item){
+                        if (!angular.equals(item, removedItem)) newSelectedCollections.push(item);
+                    });
+                    scope.selectedCollections = newSelectedCollections;
 
                     $q.when(removeItemFn(scope.$parent, {$item: removedItem}))
                         .then(function() {
