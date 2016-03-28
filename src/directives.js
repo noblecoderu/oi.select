@@ -201,7 +201,7 @@ angular.module('oi.select')
                                 });
                             timeoutPromise = null; //`resetMatches` should not cancel the `promise`
                         } else {
-                            oiUtils.intersection(output, scope.selectedCollections, null, selectAs);
+                            promise = $q.when(oiUtils.intersection(output, scope.selectedCollections, null, selectAs));
                         }
                     }
 
