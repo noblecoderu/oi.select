@@ -173,7 +173,9 @@ angular.module('oi.select')
                     var output = compact(value),
                         promise = $q.when(output);
 
+                    var first_load = false;
                     if (angular.isUndefined(scope.selectedCollections)) {
+                        first_load = true;
                         if (angular.isUndefined(ctrl.$modelValue)){
                             scope.selectedCollections = [];
                         } else if (angular.isArray(ctrl.$modelValue)){
@@ -194,7 +196,13 @@ angular.module('oi.select')
                     }
 
                     if (selectAsFn && exists(value)) {
-                        if (!scope.useResource) {
+                        if (!scope.useResource){
+                            promise = getMatches(null, value)
+                                .then(function(collection) {
+                                    return oiUtils.intersection(output, collection, null, selectAs);
+                                });
+                            timeoutPromise = null; //`resetMatches` should not cancel the `promise`
+                        } else if (first_load && selectAsName && selectAsName.indexOf('.') >= 0 && !angular.isUndefined(ctrl.$modelValue)){
                             promise = getMatches(null, value)
                                 .then(function(collection) {
                                     return oiUtils.intersection(output, collection, null, selectAs);
