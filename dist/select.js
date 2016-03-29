@@ -684,7 +684,6 @@ angular.module('oi.select')
                             if (multiple) {
                                 ctrl.$modelValue.splice(position, 1);
                                 ctrl.$setViewValue([].concat(ctrl.$modelValue));
-f
                             } else  {
                                 cleanInput();
 
