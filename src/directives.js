@@ -211,7 +211,13 @@ angular.module('oi.select')
                                 });
                             timeoutPromise = null; //`resetMatches` should not cancel the `promise`
                         } else {
-                            promise = $q.when(oiUtils.intersection(output, scope.selectedCollections, null, selectAs));
+                            //КОСТЫЛЬ
+                            promise = undefined;
+                            scope.output = oiUtils.intersection(output, scope.selectedCollections, null, selectAs);
+
+                            if (selectAsFn && exists(value) && scope.output.length == 0 && output.length > 0) {
+                                ctrl.$setViewValue(undefined);
+                            }
                         }
                     }
 
@@ -219,15 +225,17 @@ angular.module('oi.select')
                         scope.inputHide = false;
                     }
 
-                    promise.then(function(collection) {
-                        scope.output = collection;
+                    if (promise && promise.then){
+                        promise.then(function(collection) {
+                            scope.output = collection;
 
-                        if (selectAsFn && exists(value) && collection.length == 0 && output.length > 0) {
-                            ctrl.$setViewValue(undefined);
-                        } else if (collection.length !== output.length) {
-                            scope.removeItem(collection.length); //if newItem was not created
-                        }
-                    });
+                            if (selectAsFn && exists(value) && collection.length == 0 && output.length > 0) {
+                                ctrl.$setViewValue(undefined);
+                            } else if (collection.length !== output.length) {
+                                scope.removeItem(collection.length); //if newItem was not created
+                            }
+                        });
+                    }
                 });
 
                 scope.$watch('query', function(inputValue, oldValue) {
@@ -243,7 +251,7 @@ angular.module('oi.select')
                             getMatches(inputValue);
                             scope.oldQuery = null;
                         } else if (multiple) {
-                            resetMatches();
+                            getMatches("");
                             matchesWereReset = true;
                         }
                     }
@@ -694,7 +702,7 @@ angular.module('oi.select')
                             .then(function(values) {
                                 scope.groups = {};
 
-                                if (angular.isUndefined(scope.cacheCollections)){
+                                if (!selectedAs && angular.isUndefined(scope.cacheCollections)){
                                     scope.cacheCollections = angular.copy(values);
                                 }
 
