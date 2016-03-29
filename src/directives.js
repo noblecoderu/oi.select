@@ -205,7 +205,9 @@ angular.module('oi.select')
                         } else if (first_load && selectAsName && selectAsName.indexOf('.') >= 0 && !angular.isUndefined(ctrl.$modelValue)){
                             promise = getMatches(null, value)
                                 .then(function(collection) {
-                                    return oiUtils.intersection(output, collection, null, selectAs);
+                                    var t = oiUtils.intersection(output, collection, null, selectAs);
+                                    scope.selectedCollections = angular.copy(t);
+                                    return t;
                                 });
                             timeoutPromise = null; //`resetMatches` should not cancel the `promise`
                         } else {
@@ -646,23 +648,23 @@ f
                             } else if (selectedAs && !params.selectedAs){ // Когда функция стандартная
                                 if( Object.prototype.toString.call(selectedAs) === '[object Array]' ) {
                                     params = {
-                                        items: []
+                                        ids: []
                                     };
                                     for (var i = 0; i < selectedAs.length; i++){
                                         if (typeof selectedAs[i] == "string"){
-                                            params.items.push(selectedAs[i]);
+                                            params.ids.push(selectedAs[i]);
                                         } else {
-                                             params.items.push(selectedAs[i].id);
+                                             params.ids.push(selectedAs[i].id);
                                         }
                                     }
-                                    params.items = JSON.stringify(params.items);
+                                    params.ids = JSON.stringify(params.ids);
                                 } else if (typeof selectedAs == "string"){
                                     params = {
-                                        items: JSON.stringify([selectedAs])
+                                        ids: JSON.stringify([selectedAs])
                                     };
                                 } else {
                                     params = {
-                                        items: JSON.stringify([selectedAs.id])
+                                        ids: JSON.stringify([selectedAs.id])
                                     };
                                 }
                             } else {
