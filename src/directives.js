@@ -91,8 +91,7 @@ angular.module('oi.select')
                     groupFilterOptionsFn = $parse(match[1]);
 
                 //COLLECTIONS
-                scope.selectedCollections = undefined;
-                scope.cacheCollections = undefined;
+                scope.collections = {};
 
                 //COUNT AND FILTERS
                 scope.useResource  = resourceFnName != '';
@@ -174,14 +173,14 @@ angular.module('oi.select')
                         promise = $q.when(output);
 
                     var first_load = false;
-                    if (angular.isUndefined(scope.selectedCollections)) {
+                    if (angular.isUndefined(scope.collections.selected)) {
                         first_load = true;
                         if (angular.isUndefined(ctrl.$modelValue)){
-                            scope.selectedCollections = [];
+                            scope.collections.selected = [];
                         } else if (angular.isArray(ctrl.$modelValue)){
-                            scope.selectedCollections = angular.copy(ctrl.$modelValue);
+                            scope.collections.selected = angular.copy(ctrl.$modelValue);
                         } else {
-                            scope.selectedCollections = [angular.copy(ctrl.$modelValue)];
+                            scope.collections.selected = [angular.copy(ctrl.$modelValue)];
                         }
                     }
 
@@ -206,18 +205,12 @@ angular.module('oi.select')
                             promise = getMatches(null, value)
                                 .then(function(collection) {
                                     var t = oiUtils.intersection(output, collection, null, selectAs);
-                                    scope.selectedCollections = angular.copy(t);
+                                    scope.collections.selected = angular.copy(t);
                                     return t;
                                 });
                             timeoutPromise = null; //`resetMatches` should not cancel the `promise`
                         } else {
-                            //КОСТЫЛЬ
-                            promise = undefined;
-                            scope.output = oiUtils.intersection(output, scope.selectedCollections, null, selectAs);
-
-                            if (selectAsFn && exists(value) && scope.output.length == 0 && output.length > 0) {
-                                ctrl.$setViewValue(undefined);
-                            }
+                            promise = $q.when(oiUtils.intersection(output, scope.collections.selected, null, selectAs));
                         }
                     }
 
@@ -225,17 +218,15 @@ angular.module('oi.select')
                         scope.inputHide = false;
                     }
 
-                    if (promise && promise.then){
-                        promise.then(function(collection) {
-                            scope.output = collection;
+                    promise.then(function(collection) {
+                        scope.output = collection;
 
-                            if (selectAsFn && exists(value) && collection.length == 0 && output.length > 0) {
-                                ctrl.$setViewValue(undefined);
-                            } else if (collection.length !== output.length) {
-                                scope.removeItem(collection.length); //if newItem was not created
-                            }
-                        });
-                    }
+                        if (selectAsFn && exists(value) && collection.length == 0 && output.length > 0) {
+                            ctrl.$setViewValue(undefined);
+                        } else if (collection.length !== output.length) {
+                            scope.removeItem(collection.length); //if newItem was not created
+                        }
+                    });
                 });
 
                 scope.$watch('query', function(inputValue, oldValue) {
@@ -288,7 +279,7 @@ angular.module('oi.select')
 
                 scope.addItem = function addItem(option) {
                     lastQuery = scope.query;
-                    scope.selectedCollections.push(option);
+                    scope.collections.selected.push(option);
 
                     //duplicate
                     if (multiple && oiUtils.intersection(scope.output, [option], trackBy, trackBy).length) return;
@@ -332,12 +323,6 @@ angular.module('oi.select')
                     if (attrs.disabled || multiple && position < 0) return;
 
                     removedItem = multiple ? ctrl.$modelValue[position] : ctrl.$modelValue;
-
-                    newSelectedCollections = [];
-                    angular.forEach(scope.selectedCollections, function(item){
-                        if (!angular.equals(item, removedItem)) newSelectedCollections.push(item);
-                    });
-                    scope.selectedCollections = newSelectedCollections;
 
                     $q.when(removeItemFn(scope.$parent, {$item: removedItem}))
                         .then(function() {
@@ -679,8 +664,8 @@ angular.module('oi.select')
                                 params.offset = (scope.page - 1)*scope.countOnPage;
                                 params.limit = scope.countOnPage;
                             }
-                            if (!query && angular.isArray(scope.cacheCollections)){
-                                values = angular.copy(scope.cacheCollections);
+                            if (!query && angular.isArray(scope.collections.cache)){
+                                values = angular.copy(scope.collections.cache);
                             } else {
                                 values = resourceFn(scope.$parent).query(params) || '';
                             }
@@ -702,8 +687,8 @@ angular.module('oi.select')
                             .then(function(values) {
                                 scope.groups = {};
 
-                                if (!selectedAs && angular.isUndefined(scope.cacheCollections)){
-                                    scope.cacheCollections = angular.copy(values);
+                                if (!selectedAs && angular.isUndefined(scope.collections.cache)){
+                                    scope.collections.cache = angular.copy(values);
                                 }
 
                                 if (values && !selectedAs) {
