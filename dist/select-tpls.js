@@ -519,11 +519,9 @@ angular.module('oi.select')
                         promise = $q.when(output);
 
                     var first_load = false;
-                    if (angular.isUndefined(scope.collections.selected)) {
+                    if (angular.isUndefined(scope.collections.selected) && !angular.isUndefined(ctrl.$modelValue)) {
                         first_load = true;
-                        if (angular.isUndefined(ctrl.$modelValue)){
-                            scope.collections.selected = [];
-                        } else if (angular.isArray(ctrl.$modelValue)){
+                        if (angular.isArray(ctrl.$modelValue)){
                             scope.collections.selected = angular.copy(ctrl.$modelValue);
                         } else {
                             scope.collections.selected = [angular.copy(ctrl.$modelValue)];
