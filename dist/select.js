@@ -623,7 +623,11 @@ angular.module('oi.select')
 
                 scope.addItem = function addItem(option) {
                     lastQuery = scope.query;
-                    scope.collections.selected.push(option);
+                    try{
+                        scope.collections.selected.push(option);
+                    } catch (e) {
+                        scope.collections.selected = [option];
+                    }
 
                     //duplicate
                     if (multiple && oiUtils.intersection(scope.output, [option], trackBy, trackBy).length) return;
