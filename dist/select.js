@@ -368,13 +368,14 @@ angular.module('oi.select')
                 valueName             = match[5] || match[7],                 //item
                 groupByName           = match[3] || '',                       //item.groupName
                 disableWhenName       = match[4] || '',                       //item.disableWhenName
-                trackByName           = match[9] || displayName,              //item.id
                 valueMatches          = match[8].match(VALUES_REGEXP);        //collection
 
             var valuesName            = valueMatches[1],                                    //collection()
                 resourceFnName        = valuesName[0] == '!' ? valuesName.slice(1) : '',    //collection
                 filteredValuesName    = valuesName + (valueMatches[3] || ''),               //collection | filter
                 valuesFnName          = valuesName + (valueMatches[2] || '');               //collection()
+
+                trackByName           = match[9] || (resourceFnName ? (valueName + ".id") : displayName);  //item.id
 
             var selectAsFn            = selectAsName && $parse(selectAsName),
                 displayFn             = $parse(displayName),
