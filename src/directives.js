@@ -95,6 +95,8 @@ angular.module('oi.select')
                 scope.collections = {};
 
                 //COUNT AND FILTERS
+                scope.createNew = !!options.newItem;
+                scope.newMessage = options.newMessage;
                 scope.useResource  = resourceFnName != '';
                 scope.page = 1;
                 scope.$parent.$watch(attrs.countOnPage, function(value) {

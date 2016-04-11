@@ -29,7 +29,13 @@
             ng-bind-html="getDropdownLabel(option)"></li>
     </ul>
     <div class="select-dropdown-pager" ng-if="useResource">
+        <p class="select-dropdown-pager-page" ng-if="createNew && newMessage && query && query.length >= 3">{{ newMessage }}</p>
         <p class="select-dropdown-pager-page">{[{ page }]} / {[{ countPages }]}</p>
         <button class="select-dropdown-pager-loadmore" ng-if="countPages > 1 && page < countPages">Загрузить ещё</button>
+    </div>
+</div>
+<div class="select-dropdown" ng-show="!isOpen && useResource && createNew && newMessage && query && query.length >= 3">
+    <div class="select-dropdown-pager">
+        <p class="select-dropdown-pager-page">{{ newMessage }}</p>
     </div>
 </div>
