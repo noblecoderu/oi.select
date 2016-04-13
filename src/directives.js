@@ -224,7 +224,13 @@ angular.module('oi.select')
 
                         if (selectAsFn && exists(value) && collection.length == 0 && output.length > 0) {
                             ctrl.$setViewValue(undefined);
-                        } else if (collection.length !== output.length) {
+                        } else if (first_load && collection.length !== output.length) {
+                            var newValues = [];
+                            angular.forEach(collection, function(element){
+                                newValues.push(selectAsFn ? selectAs(element) : element)
+                            });
+                            ctrl.$setViewValue(newValues);
+                        } else if (collection.length !== output.length){
                             scope.removeItem(collection.length); //if newItem was not created
                         }
                     });
