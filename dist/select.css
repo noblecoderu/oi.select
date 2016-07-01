@@ -1,3 +1,25 @@
+.preloader {
+  height: 15px;
+  width: 15px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #22272e rgba(34, 39, 46, 0.4) rgba(34, 39, 46, 0.4) rgba(34, 39, 46, 0.4);
+  border-radius: 100%;
+  -webkit-animation: clockwise .45s linear infinite;
+  animation: clockwise .45s linear infinite;
+}
+@-webkit-keyframes clockwise {
+  to {
+    -webkit-transform: rotate(360deg) translatez(0);
+    transform: rotate(360deg) translatez(0);
+  }
+}
+@keyframes clockwise {
+  to {
+    -webkit-transform: rotate(360deg) translatez(0);
+    transform: rotate(360deg) translatez(0);
+  }
+}
 oi-select {
   display: block;
   position: relative;

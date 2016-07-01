@@ -1,5 +1,24 @@
 @import "variables.less";
 
+.preloader {
+    @keyframes clockwise {
+        to {transform: rotate(360deg) translatez(0);}
+    }
+
+
+    height: 15px;
+    width:  15px;
+    border-width: 2px;
+    border-style: solid;
+    border-color:
+        hsla(215, 15%, 15.7%, 1)
+        hsla(215, 15%, 15.7%, 0.4)
+        hsla(215, 15%, 15.7%, 0.4)
+        hsla(215, 15%, 15.7%, 0.4);
+    border-radius: 100%;
+    animation: clockwise .45s linear infinite;
+}
+
 oi-select {
     display: block;
     position: relative;
@@ -261,7 +280,7 @@ oi-select {
                         &_selection {
                             cursor: not-allowed;
                             background: @ultralightgray;
-                            
+
                             &-remove {
                                 visibility: hidden;
                             }

@@ -11,8 +11,11 @@
                                                                           ng-model="query"
                                                                           ng-keyup="keyUp($event)"
                                                                           ng-keydown="keyDown($event)"/></li>
-        <li class="select-search-list-item select-search-list-item_loader"
-            ng-show="showLoader"></li>
+        <li class="select-search-list-item"
+            ng-show="showLoader">
+            <div class="ng-cloak preloader"></div>
+        </li>
+
     </ul>
 </div>
 <div class="select-dropdown" ng-show="isOpen">
