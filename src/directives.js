@@ -68,6 +68,7 @@ angular.module('oi.select')
                     editItem            = options.editItem,
                     editItemIsCorrected = editItem === 'correct',
                     waitTime            = 0;
+                    cacheParams         = undefined;
 
                 if (editItem === true || editItem === 'correct') {
                     editItem = 'oiSelectEditItem';
@@ -675,6 +676,26 @@ angular.module('oi.select')
                                 params.offset = (scope.page - 1)*scope.countOnPage;
                                 params.limit = scope.countOnPage;
                             }
+                            
+                            
+                            if (query) {
+                                values = resourceFn(scope.$parent).query(params) || '';
+                            } else {
+                                if (!cacheParams) cacheParams = angular.copy(params);
+                                if (angular.equals(cacheParams, params)) {
+                                    if (angular.isArray(scope.collections.cache)){
+                                        values = angular.copy(scope.collections.cache);
+                                    } else {
+                                        values = resourceFn(scope.$parent).query(params) || '';
+                                    }
+                                } else {
+                                    cacheParams = angular.copy(params);
+                                    values = resourceFn(scope.$parent).query(params) || '';
+                                }
+                            }
+
+
+
                             if (!query && angular.isArray(scope.collections.cache)){
                                 values = angular.copy(scope.collections.cache);
                             } else {

@@ -5,18 +5,10 @@
   border-style: solid;
   border-color: #22272e rgba(34, 39, 46, 0.4) rgba(34, 39, 46, 0.4) rgba(34, 39, 46, 0.4);
   border-radius: 100%;
-  -webkit-animation: clockwise .45s linear infinite;
   animation: clockwise .45s linear infinite;
-}
-@-webkit-keyframes clockwise {
-  to {
-    -webkit-transform: rotate(360deg) translatez(0);
-    transform: rotate(360deg) translatez(0);
-  }
 }
 @keyframes clockwise {
   to {
-    -webkit-transform: rotate(360deg) translatez(0);
     transform: rotate(360deg) translatez(0);
   }
 }
@@ -43,13 +35,10 @@ oi-select .select-search {
   font-size: inherit;
 }
 oi-select .select-search-list {
-  display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-flex-flow: row wrap;
   -ms-flex-flow: row wrap;
   flex-flow: row wrap;
-  -webkit-justify-content: flex-start;
   -ms-flex-pack: start;
   justify-content: flex-start;
   margin: 0;
@@ -100,34 +89,29 @@ oi-select .select-search-list-item_selection-label {
 }
 oi-select .select-search-list-item_loader {
   position: absolute;
-  right: 5px;
+  right: 8px;
   top: 50%;
   margin-top: -8px;
   width: 16px;
   height: 16px;
   box-sizing: border-box;
-  border-width: 1px;
+  border-width: 2px;
   border-style: solid;
   border-color: #22272e rgba(34, 39, 46, 0.4) rgba(34, 39, 46, 0.4) rgba(34, 39, 46, 0.4);
   border-radius: 100%;
-  -webkit-animation: clockwise .45s linear infinite;
   animation: clockwise .45s linear infinite;
 }
 @keyframes clockwise {
   to {
-    -webkit-transform: rotate(360deg) translatez(0);
     transform: rotate(360deg) translatez(0);
   }
 }
 oi-select .select-search-list-item_input {
-  -webkit-flex-grow: 1;
   -ms-flex-positive: 1;
   flex-grow: 1;
   margin: 0 0 0 5px;
-  display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-align-items: center;
   -ms-flex-align: center;
   align-items: center;
   height: 29px;
@@ -201,9 +185,7 @@ oi-select:not(.multiple) .select-search {
   min-height: 30px;
 }
 oi-select:not(.multiple) .select-search-list {
-  -webkit-align-items: center;
   -ms-flex-align: center;
-  -ms-grid-row-align: center;
   align-items: center;
 }
 oi-select:not(.multiple) .select-search-list-item_input {
