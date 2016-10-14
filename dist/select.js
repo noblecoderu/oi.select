@@ -1042,11 +1042,11 @@ angular.module('oi.select')
 
 
 
-                            if (!query && angular.isArray(scope.collections.cache)){
-                                values = angular.copy(scope.collections.cache);
-                            } else {
-                                values = resourceFn(scope.$parent).query(params) || '';
-                            }
+                            // if (!query && angular.isArray(scope.collections.cache)){
+                            //     values = angular.copy(scope.collections.cache);
+                            // } else {
+                            //     values = resourceFn(scope.$parent).query(params) || '';
+                            // }
                         }
 
                         scope.selectorPosition = options.newItem === 'prompt' ? false : 0;
