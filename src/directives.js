@@ -689,7 +689,6 @@ angular.module('oi.select')
                                         values = resourceFn(scope.$parent).query(params) || '';
                                     }
                                 } else {
-                                    cacheParams = angular.copy(params);
                                     values = resourceFn(scope.$parent).query(params) || '';
                                 }
                             }
@@ -720,8 +719,9 @@ angular.module('oi.select')
                                 scope.groups = {};
 
                                 if (!selectedAs && 
-                                    (angular.isUndefined(scope.collections.cache) || !angular.equals(cacheParams, params))){
-                                    scope.collections.cache = angular.copy(values);
+                                    (angular.isUndefined(scope.collections.cache) || !angular.equals(cacheParams, params))) {
+                                        cacheParams = angular.copy(params);
+                                        scope.collections.cache = angular.copy(values);
                                 }
 
                                 if (values && !selectedAs) {
