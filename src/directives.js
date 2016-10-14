@@ -719,7 +719,8 @@ angular.module('oi.select')
                             .then(function(values) {
                                 scope.groups = {};
 
-                                if (!selectedAs && angular.isUndefined(scope.collections.cache)){
+                                if (!selectedAs && 
+                                    (angular.isUndefined(scope.collections.cache) || !angular.equals(cacheParams, params))){
                                     scope.collections.cache = angular.copy(values);
                                 }
 
