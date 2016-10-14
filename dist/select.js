@@ -414,7 +414,7 @@ angular.module('oi.select')
                     editItem            = options.editItem,
                     editItemIsCorrected = editItem === 'correct',
                     waitTime            = 0;
-                    cacheParams         = undefined;
+                    scope.cacheParams         = undefined;
 
                 if (editItem === true || editItem === 'correct') {
                     editItem = 'oiSelectEditItem';
@@ -1027,8 +1027,8 @@ angular.module('oi.select')
                             if (query) {
                                 values = resourceFn(scope.$parent).query(params) || '';
                             } else {
-                                if (!cacheParams) cacheParams = angular.copy(params);
-                                if (angular.equals(cacheParams, params)) {
+                                if (!scope.cacheParams) scope.cacheParams = angular.copy(params);
+                                if (angular.equals(scope.cacheParams, params)) {
                                     if (angular.isArray(scope.collections.cache)){
                                         values = angular.copy(scope.collections.cache);
                                     } else {
@@ -1065,8 +1065,8 @@ angular.module('oi.select')
                                 scope.groups = {};
 
                                 if (!selectedAs && 
-                                    (angular.isUndefined(scope.collections.cache) || !angular.equals(cacheParams, params))) {
-                                        cacheParams = angular.copy(params);
+                                    (angular.isUndefined(scope.collections.cache) || !angular.equals(scope.cacheParams, params))) {
+                                        scope.cacheParams = angular.copy(params);
                                         scope.collections.cache = angular.copy(values);
                                 }
 
